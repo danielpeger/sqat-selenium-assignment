@@ -11,10 +11,11 @@ public class SignupPage extends BasePage {
     private final By lastNameInput = By.cssSelector("input[name='last_name'], input[name='lastName'], input#last_name");
     private final By emailInput = By.cssSelector(
             "input#email_login, input[type='email'], input[name='email']");
-    private final By passwordInput = By.cssSelector("input[type='password'], input[name='password']");
+    private final By passwordInput = By.cssSelector(
+            "input#password_login, input[type='password'], input[name='password']");
     private final By marketingCheckbox = By.cssSelector("input[type='checkbox']");
     private final By submitButton = By.cssSelector(
-            "button[class*='JoinScreen__SubmitButton'], button[type='submit']");
+            "button[class*='JoinScreen__SubmitButton']");
 
     public SignupPage(WebDriver driver) {
         super(driver);
@@ -64,5 +65,10 @@ public class SignupPage extends BasePage {
 
     public boolean isSubmitButtonPresent() {
         return isPresent(submitButton);
+    }
+
+    public SignupPage clickSubmit() {
+        waitForVisible(submitButton).click();
+        return this;
     }
 }

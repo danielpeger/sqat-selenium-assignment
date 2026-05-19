@@ -18,6 +18,7 @@ import pages.LoginPage;
 import pages.SignupPage;
 import pages.SearchResultsPage;
 import util.ConfigReader;
+import util.TestDataGenerator;
 import util.WebDriverFactory;
 
 public class BasicTasks {
@@ -108,8 +109,12 @@ public class BasicTasks {
 
     @Test
     public void signupPagePasswordInputCanBeFilled() {
-        new SignupPage(driver).open().fillPassword("MyVeryStrongPwd!");
-        WebElement pwd = driver.findElement(By.cssSelector("input[type='password']"));
+        new SignupPage(driver)
+                .open()
+                .fillEmail(TestDataGenerator.randomEmail())
+                .clickSubmit()
+                .fillPassword("MyVeryStrongPwd!");
+        WebElement pwd = driver.findElement(By.id("password_login"));
         Assert.assertEquals("MyVeryStrongPwd!", pwd.getDomProperty("value"));
     }
 
@@ -189,11 +194,11 @@ public class BasicTasks {
     }
 
     @Test
-    public void complexXpathFindsAllImagesUnderMain() {
+    public void complexXpathFindsVideoUnderAssetContainer() {
         new HomePage(driver).open();
-        List<WebElement> images = driver.findElements(
-                By.xpath("//main//img[@src and not(contains(@src,'data:'))]"));
-        Assert.assertFalse("Home page main area should contain images", images.isEmpty());
+        List<WebElement> videos = driver.findElements(
+                By.xpath("//*[contains(concat(' ', normalize-space(@class), ' '), ' asset-container ')]//video"));
+        Assert.assertFalse("Home page asset-container should contain a video", videos.isEmpty());
     }
 
     @Test
