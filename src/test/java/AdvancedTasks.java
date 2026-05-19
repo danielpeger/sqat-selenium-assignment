@@ -143,7 +143,7 @@ public class AdvancedTasks {
         String email = TestDataGenerator.randomEmail();
         String password = TestDataGenerator.randomPassword();
         SignupPage signupPage = new SignupPage(driver).open();
-        signupPage.fillEmail(email).fillPassword(password);
+        signupPage.fillEmail(email).clickSubmit().fillPassword(password);
         Assert.assertEquals(email, signupPage.getEmailValue());
         Assert.assertEquals(password, signupPage.getPasswordValue());
     }
@@ -166,7 +166,7 @@ public class AdvancedTasks {
         new HomePage(driver).open();
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-        long scrollY = ((Number) js.executeScript("return window.pageYOffset;")).longValue();
+        double scrollY = ((Number) js.executeScript("return window.pageYOffset;")).doubleValue();
         Assert.assertTrue("Page should have scrolled vertically, scrollY=" + scrollY, scrollY > 0);
         String title = (String) js.executeScript("return document.title;");
         Assert.assertEquals(driver.getTitle(), title);
