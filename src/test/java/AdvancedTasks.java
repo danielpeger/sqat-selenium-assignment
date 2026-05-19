@@ -188,8 +188,29 @@ public class AdvancedTasks {
     public void javascriptExecutorScrollsAndReadsPageState() {
         new HomePage(driver).open();
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-        double scrollY = ((Number) js.executeScript("return window.pageYOffset;")).doubleValue();
+
+        js.executeScript(
+                "var el = document.scrollingElement || document.documentElement || document.body;" +
+                        "if (el) { el.scrollTop = el.scrollHeight; }" +
+                        "window.scrollTo(0, Math.max(document.body.scrollHeight, document.documentElement.scrollHeight));");
+
+        wait.until(d -> {
+            Number stableScroll = (Number) js.executeScript(
+                    "return Math.max(" +
+                            "window.pageYOffset || 0," +
+                            "window.scrollY || 0," +
+                            "(document.documentElement && document.documentElement.scrollTop) || 0," +
+                            "(document.body && document.body.scrollTop) || 0);");
+            return stableScroll.doubleValue() > 0;
+        });
+
+        double scrollY = ((Number) js.executeScript(
+                "return Math.max(" +
+                        "window.pageYOffset || 0," +
+                        "window.scrollY || 0," +
+                        "(document.documentElement && document.documentElement.scrollTop) || 0," +
+                        "(document.body && document.body.scrollTop) || 0);")).doubleValue();
+
         Assert.assertTrue("Page should have scrolled vertically, scrollY=" + scrollY, scrollY > 0);
         String title = (String) js.executeScript("return document.title;");
         Assert.assertEquals(driver.getTitle(), title);
