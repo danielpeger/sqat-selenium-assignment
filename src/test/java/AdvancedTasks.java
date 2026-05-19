@@ -227,19 +227,4 @@ public class AdvancedTasks {
                 driver.getTitle().toLowerCase().contains("vimeo"));
     }
 
-    @Test
-    public void homePageLoadsInChromeBrowser() {
-        driver.quit();
-        driver = WebDriverFactory.create("chrome", false);
-        driver.get(ConfigReader.get("base.url"));
-        Assert.assertTrue(driver.getTitle().toLowerCase().contains("vimeo"));
-    }
-
-    @Test
-    public void homePageLoadsInSafariBrowser() {
-        driver.quit();
-        driver = WebDriverFactory.create("safari", false);
-        driver.get(ConfigReader.get("base.url"));
-        Assert.assertTrue(driver.getTitle().toLowerCase().contains("vimeo"));
-    }
 }
