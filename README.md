@@ -68,6 +68,9 @@ From the project root:
 # Run only the advanced tasks
 ./gradlew test --tests AdvancedTasks
 
+# Run only cross-browser task
+./gradlew test --tests CrossBrowserParameterizedTest
+
 # Run a single test method
 ./gradlew test --tests "BasicTasks.homePageTitleContainsVimeo"
 ```
