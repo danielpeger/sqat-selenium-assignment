@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+
+# macOS
+.DS_Store
+
+# IntelliJ / IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# Logs
+*.log
