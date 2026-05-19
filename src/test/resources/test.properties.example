@@ -6,6 +6,7 @@ upload.defaults.url=https://vimeo.com/settings/videos/upload_defaults
 settings.url=https://vimeo.com/settings
 profile.url=https://vimeo.com/settings/profile/general
 about.url=https://vimeo.com/about
+video.page.url=https://vimeo.com/manage/videos/1193645870
 
 user.email=YOUR_VIMEO_EMAIL
 user.password=YOUR_VIMEO_PASSWORD

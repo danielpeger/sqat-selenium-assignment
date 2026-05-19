@@ -95,14 +95,37 @@ public class AdvancedTasks {
     }
 
     @Test
-    public void dragAndDropPerformsActionWithoutError() {
-        new HomePage(driver).open();
-        List<WebElement> images = driver.findElements(By.cssSelector("img"));
-        Assert.assertTrue("Need at least two elements to drag between", images.size() >= 2);
-        WebElement source = images.get(0);
-        WebElement target = images.get(1);
-        new Actions(driver).dragAndDrop(source, target).perform();
-        Assert.assertTrue("Drag-and-drop completed without throwing", true);
+    public void videoScrubberDragAndDrop() {
+        loginWithRealCredentials();
+        driver.get(ConfigReader.get("video.page.url"));
+        By playButton = By.cssSelector("button[data-play-button='true']");
+        By slider = By.cssSelector("[data-progress-bar-focus-target='true'][role='slider']");
+
+        WebElement play = wait.until(ExpectedConditions.elementToBeClickable(playButton));
+        play.click();
+
+        WebElement scrubber = wait.until(ExpectedConditions.visibilityOfElementLocated(slider));
+        String beforeValueRaw = scrubber.getAttribute("aria-valuenow");
+        Assert.assertNotNull("Progress slider must expose aria-valuenow", beforeValueRaw);
+        double beforeValue = Double.parseDouble(beforeValueRaw);
+
+        new Actions(driver)
+                .moveToElement(scrubber)
+                .clickAndHold(scrubber)
+                .pause(Duration.ofMillis(250))
+                .moveByOffset(120, 0)
+                .pause(Duration.ofMillis(250))
+                .release()
+                .perform();
+
+        wait.until(d -> {
+            String now = d.findElement(slider).getAttribute("aria-valuenow");
+            return now != null && Double.parseDouble(now) > beforeValue;
+        });
+        double afterValue = Double.parseDouble(driver.findElement(slider).getAttribute("aria-valuenow"));
+        Assert.assertTrue(
+                "Expected scrubber value to increase after drag. Before=" + beforeValue + ", After=" + afterValue,
+                afterValue > beforeValue);
     }
 
     @Test

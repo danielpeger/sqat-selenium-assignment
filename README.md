@@ -39,6 +39,7 @@ Test settings (URLs, credentials, browser, waits) live in a properties file that
    settings.url=https://vimeo.com/settings
    profile.url=https://vimeo.com/settings/profile/general
    about.url=https://vimeo.com/about
+   video.page.url=https://vimeo.com/manage/videos/YOUR_VIDEO_ID
 
    user.email=YOUR_VIMEO_EMAIL
    user.password=YOUR_VIMEO_PASSWORD
