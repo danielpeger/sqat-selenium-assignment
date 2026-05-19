@@ -3,6 +3,7 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import util.ConfigReader;
 
 public class UploadPage extends BasePage {
@@ -20,7 +21,12 @@ public class UploadPage extends BasePage {
     }
 
     public boolean hasFileInput() {
-        return isPresent(fileInput);
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(fileInput));
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     public WebElement getFileInput() {
