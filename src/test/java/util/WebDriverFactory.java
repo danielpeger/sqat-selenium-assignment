@@ -9,6 +9,7 @@ import org.openqa.selenium.safari.SafariOptions;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import org.openqa.selenium.Dimension;
 
 public class WebDriverFactory {
 
@@ -32,6 +33,7 @@ public class WebDriverFactory {
                 break;
         }
         driver.manage().window().maximize();
+        driver.manage().window().setSize(new Dimension(1400, 900));
         return driver;
     }
 

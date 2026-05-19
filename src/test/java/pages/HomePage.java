@@ -14,6 +14,8 @@ public class HomePage extends BasePage {
     private final By userMenuButton = By.cssSelector("[data-test-id='topnav-user-menu'], button[aria-label*='profile' i], a[href='/settings']");
     private final By logoutLink = By.xpath("//a[contains(@href,'/log_out') or contains(.,'Log out') or contains(.,'Sign out')]");
     private final By searchInput = By.cssSelector("input[type='search'], input[placeholder*='Search' i], input[name='q']");
+    private final By searchInputByRole = By.cssSelector("input[role='search']");
+    private final By searchTrigger = By.cssSelector("button[aria-label*='search' i], [data-testid*='search' i], a[href*='/search']");
 
     public HomePage(WebDriver driver) {
         super(driver);
@@ -55,6 +57,15 @@ public class HomePage extends BasePage {
     }
 
     public WebElement getSearchInput() {
+        int defaultSelectorCount = driver.findElements(searchInput).size();
+        int roleSelectorCount = driver.findElements(searchInputByRole).size();
+        int triggerCount = driver.findElements(searchTrigger).size();
+
+        if (defaultSelectorCount == 0 && roleSelectorCount == 0 && triggerCount > 0) {
+            WebElement trigger = waitForClickable(searchTrigger);
+            trigger.click();
+        }
+
         return waitForVisible(searchInput);
     }
 }
