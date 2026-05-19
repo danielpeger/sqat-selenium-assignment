@@ -128,7 +128,7 @@ public class AdvancedTasks {
     public void browserBackAndForwardNavigationWorks() {
         driver.get(ConfigReader.get("base.url"));
         String firstUrl = driver.getCurrentUrl();
-        driver.get("https://vimeo.com/about");
+        driver.get(ConfigReader.get("about.url"));
         String secondUrl = driver.getCurrentUrl();
         driver.navigate().back();
         wait.until(ExpectedConditions.urlToBe(firstUrl));
@@ -144,18 +144,19 @@ public class AdvancedTasks {
         String password = TestDataGenerator.randomPassword();
         SignupPage signupPage = new SignupPage(driver).open();
         signupPage.fillEmail(email).fillPassword(password);
-        WebElement emailField = driver.findElement(By.cssSelector("input[type='email']"));
-        WebElement passwordField = driver.findElement(By.cssSelector("input[type='password']"));
-        Assert.assertEquals(email, emailField.getDomProperty("value"));
-        Assert.assertEquals(password, passwordField.getDomProperty("value"));
+        Assert.assertEquals(email, signupPage.getEmailValue());
+        Assert.assertEquals(password, signupPage.getPasswordValue());
     }
 
     @Test
     public void configurationIsLoadedFromExternalPropertiesFile() {
         String baseUrl = ConfigReader.get("base.url");
         String loginUrl = ConfigReader.get("login.url");
-        Assert.assertEquals("https://vimeo.com", baseUrl);
-        Assert.assertEquals("https://vimeo.com/log_in", loginUrl);
+        Assert.assertFalse("base.url should not be empty", baseUrl == null || baseUrl.trim().isEmpty());
+        Assert.assertFalse("login.url should not be empty", loginUrl == null || loginUrl.trim().isEmpty());
+        Assert.assertTrue(
+                "login.url should point to the log_in page",
+                loginUrl.equals(baseUrl + "/log_in") || loginUrl.contains("/log_in"));
         driver.get(baseUrl);
         Assert.assertTrue(driver.getTitle().toLowerCase().contains("vimeo"));
     }

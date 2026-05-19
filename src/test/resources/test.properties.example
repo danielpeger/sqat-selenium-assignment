@@ -2,7 +2,10 @@ base.url=https://vimeo.com
 login.url=https://vimeo.com/log_in
 signup.url=https://vimeo.com/join
 upload.url=https://vimeo.com/upload
+upload.defaults.url=https://vimeo.com/settings/videos/upload_defaults
 settings.url=https://vimeo.com/settings
+profile.url=https://vimeo.com/settings/profile/general
+about.url=https://vimeo.com/about
 
 user.email=YOUR_VIMEO_EMAIL
 user.password=YOUR_VIMEO_PASSWORD

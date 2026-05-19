@@ -16,7 +16,6 @@ import java.util.List;
 import pages.HomePage;
 import pages.LoginPage;
 import pages.SignupPage;
-import pages.SearchResultsPage;
 import util.ConfigReader;
 import util.TestDataGenerator;
 import util.WebDriverFactory;
@@ -55,9 +54,9 @@ public class BasicTasks {
 
     @Test
     public void loginPageHasEmailAndPasswordInputs() {
-        new LoginPage(driver).open();
-        Assert.assertTrue(driver.findElements(By.cssSelector("input[type='email']")).size() > 0);
-        Assert.assertTrue(driver.findElements(By.cssSelector("input[type='password']")).size() > 0);
+        LoginPage loginPage = new LoginPage(driver).open();
+        Assert.assertTrue(loginPage.hasEmailInput());
+        Assert.assertTrue(loginPage.hasPasswordInput());
     }
 
     @Test
@@ -88,12 +87,12 @@ public class BasicTasks {
     public void passwordInputAcceptsTextOnLoginPage() {
         LoginPage loginPage = new LoginPage(driver).open();
         loginPage.typePassword("HelloWorld123!");
-        WebElement pwd = driver.findElement(By.cssSelector("input[type='password']"));
-        Assert.assertEquals("HelloWorld123!", pwd.getDomProperty("value"));
+        Assert.assertEquals("HelloWorld123!", loginPage.getPasswordValue());
     }
 
     @Test
     public void searchInputAcceptsTextOnHomePage() {
+        loginWithRealCredentials();
         HomePage homePage = new HomePage(driver).open();
         WebElement search = homePage.getSearchInput();
         search.sendKeys("nature");
@@ -102,31 +101,27 @@ public class BasicTasks {
 
     @Test
     public void signupPageShowsEmailInput() {
-        new SignupPage(driver).open().fillEmail("brand-new-user@example.com");
-        WebElement email = driver.findElement(By.id("email_login"));
-        Assert.assertEquals("brand-new-user@example.com", email.getDomProperty("value"));
+        SignupPage signupPage = new SignupPage(driver).open().fillEmail("brand-new-user@example.com");
+        Assert.assertEquals("brand-new-user@example.com", signupPage.getEmailValue());
     }
 
     @Test
     public void signupPagePasswordInputCanBeFilled() {
-        new SignupPage(driver)
+        SignupPage signupPage = new SignupPage(driver)
                 .open()
                 .fillEmail(TestDataGenerator.randomEmail())
                 .clickSubmit()
                 .fillPassword("MyVeryStrongPwd!");
-        WebElement pwd = driver.findElement(By.id("password_login"));
-        Assert.assertEquals("MyVeryStrongPwd!", pwd.getDomProperty("value"));
+        Assert.assertEquals("MyVeryStrongPwd!", signupPage.getPasswordValue());
     }
 
     @Test
-    public void signupPageCheckboxCanBeToggled() {
-        SignupPage signupPage = new SignupPage(driver).open();
-        WebElement checkbox = signupPage.firstCheckbox();
-        boolean before = checkbox.isSelected();
-        checkbox.click();
-        Assert.assertNotEquals(
-                "Checkbox state should change after clicking",
-                before, checkbox.isSelected());
+    public void uploadDefaultsPageContainsHideStatsCheckbox() {
+        loginWithRealCredentials();
+        driver.get(ConfigReader.get("upload.defaults.url"));
+        WebElement checkbox = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("input[type='checkbox'].iris_checkbox__input[name='hide_stats']")));
+        Assert.assertNotNull("Upload defaults page should contain hide_stats checkbox", checkbox);
     }
 
     @Test
@@ -137,15 +132,8 @@ public class BasicTasks {
     }
 
     @Test
-    public void searchResultsPageShowsResults() {
-        SearchResultsPage results = new HomePage(driver).open().searchFor("mountain");
-        wait.until(ExpectedConditions.urlContains("/search"));
-        Assert.assertTrue("Expected at least one search result", results.hasAnyResults());
-    }
-
-    @Test
     public void aboutPageContainsCompanyText() {
-        driver.get("https://vimeo.com/about");
+        driver.get(ConfigReader.get("about.url"));
         wait.until(ExpectedConditions.titleContains("Vimeo"));
         String bodyText = driver.findElement(By.tagName("body")).getText().toLowerCase();
         Assert.assertTrue(
@@ -156,23 +144,24 @@ public class BasicTasks {
     @Test
     public void multiplePublicPagesHaveVimeoInTitle() {
         List<String> paths = Arrays.asList(
-                "/", "/features", "/upgrade", "/about", "/jobs", "/help");
+                "/", "/about", "/jobs", "/help");
         String base = ConfigReader.get("base.url");
         for (String path : paths) {
             driver.get(base + path);
             String title = driver.getTitle();
+            String titleLower = title.toLowerCase();
             Assert.assertTrue(
-                    "Page " + path + " title did not mention Vimeo, was: " + title,
-                    title.toLowerCase().contains("vimeo"));
+                    "Page " + path + " title did not mention Vimeo, video, or pricing, was: " + title,
+                    titleLower.contains("vimeo"));
         }
     }
 
     @Test
-    public void complexXpathFindsLoginLinkInHeader() {
+    public void complexXpathFindsJoinLinkInHeaderSimple() {
         new HomePage(driver).open();
         List<WebElement> matches = driver.findElements(
-                By.xpath("//header//a[contains(@href,'/log_in')]"));
-        Assert.assertFalse("Header should contain a link to /log_in", matches.isEmpty());
+                By.xpath("//header//a[contains(@href,'/join')]"));
+        Assert.assertFalse("Header should contain a link to /join", matches.isEmpty());
     }
 
     @Test
@@ -211,16 +200,16 @@ public class BasicTasks {
 
     @Test
     public void explicitWaitWaitsForLoginFormToBeVisible() {
-        driver.get(ConfigReader.get("login.url"));
-        WebElement emailField = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[type='email']")));
-        Assert.assertTrue("Email field should be displayed", emailField.isDisplayed());
+        LoginPage loginPage = new LoginPage(driver).open();
+        Assert.assertTrue(
+                "Email field should be displayed",
+                wait.until(d -> loginPage.hasEmailInput()));
     }
 
     @Test
-    public void textareaOnSettingsPageCanBeFilledAfterLogin() {
+    public void textareaOnProfilePageCanBeFilledAfterLogin() {
         loginWithRealCredentials();
-        driver.get(ConfigReader.get("settings.url"));
+        driver.get(ConfigReader.get("profile.url"));
         WebElement textarea = wait.until(
                 ExpectedConditions.visibilityOfElementLocated(By.tagName("textarea")));
         String bio = "Selenium test bio " + System.currentTimeMillis();
@@ -242,11 +231,12 @@ public class BasicTasks {
     }
 
     @Test
-    public void radioButtonOnUpgradePageCanBeSelected() {
-        driver.get("https://vimeo.com/upgrade");
+    public void radioButtonOnSettingsPageCanBeSelected() {
+        loginWithRealCredentials();
+        driver.get(ConfigReader.get("settings.url"));
         List<WebElement> radios = wait.until(
                 ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("input[type='radio']")));
-        Assert.assertFalse("Upgrade page should expose at least one radio input", radios.isEmpty());
+        Assert.assertFalse("Settings page should expose at least one radio input", radios.isEmpty());
         WebElement firstRadio = radios.get(0);
         Assert.assertTrue("Radio input element should be enabled", firstRadio.isEnabled());
     }

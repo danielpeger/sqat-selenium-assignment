@@ -56,4 +56,16 @@ public class LoginPage extends BasePage {
     public String getEmailValue() {
         return waitForVisible(emailInput).getDomProperty("value");
     }
+
+    public String getPasswordValue() {
+        return waitForVisible(passwordInput).getDomProperty("value");
+    }
+
+    public boolean hasEmailInput() {
+        return isPresent(emailInput);
+    }
+
+    public boolean hasPasswordInput() {
+        return isPresent(passwordInput);
+    }
 }

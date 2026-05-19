@@ -71,4 +71,12 @@ public class SignupPage extends BasePage {
         waitForVisible(submitButton).click();
         return this;
     }
+
+    public String getEmailValue() {
+        return waitForVisible(emailInput).getDomProperty("value");
+    }
+
+    public String getPasswordValue() {
+        return waitForVisible(passwordInput).getDomProperty("value");
+    }
 }

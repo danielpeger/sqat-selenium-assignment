@@ -20,7 +20,7 @@ The project is built and executed with Gradle.
 
 ## Configuration
 
-Test settings (base URL, credentials, browser, waits) live in a properties file that is **not** checked into git.
+Test settings (URLs, credentials, browser, waits) live in a properties file that is **not** checked into git.
 
 1. Copy the example file:
 
@@ -28,19 +28,22 @@ Test settings (base URL, credentials, browser, waits) live in a properties file 
    cp src/test/resources/test.properties.example src/test/resources/test.properties
    ```
 
-2. Open `src/test/resources/test.properties` and fill in your Vimeo credentials:
+2. Open `src/test/resources/test.properties` and set all keys used by the tests:
 
    ```properties
    base.url=https://vimeo.com
    login.url=https://vimeo.com/log_in
    signup.url=https://vimeo.com/join
    upload.url=https://vimeo.com/upload
+   upload.defaults.url=https://vimeo.com/settings/videos/upload_defaults
    settings.url=https://vimeo.com/settings
+   profile.url=https://vimeo.com/settings/profile/general
+   about.url=https://vimeo.com/about
 
-   user.email=your-vimeo-email@example.com
-   user.password=your-vimeo-password
+   user.email=YOUR_VIMEO_EMAIL
+   user.password=YOUR_VIMEO_PASSWORD
 
-   browser=chrome          # chrome | safari
+   browser=chrome          # chrome | safari (unknown values fall back to chrome)
    headless=false          # true to run Chrome headless
    implicit.wait.seconds=5
    explicit.wait.seconds=15
@@ -48,7 +51,7 @@ Test settings (base URL, credentials, browser, waits) live in a properties file 
 
    `test.properties` is git-ignored, so your credentials stay local.
 
-   `ConfigReader` will fail fast with a clear error if the file is missing.
+   `ConfigReader` fails fast with a clear error if the file is missing and throws if required keys are not present.
 
 ## Running the tests
 
