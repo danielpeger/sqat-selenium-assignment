@@ -254,13 +254,17 @@ public class BasicTasks {
     @Test
     public void settingsFormCanBeSubmittedByLoggedInUser() {
         loginWithRealCredentials();
-        driver.get(ConfigReader.get("settings.url"));
+        driver.get(ConfigReader.get("profile.url"));
         WebElement bio = wait.until(
                 ExpectedConditions.visibilityOfElementLocated(By.tagName("textarea")));
         bio.clear();
         bio.sendKeys("Selenium-updated bio " + System.currentTimeMillis());
-        WebElement saveButton = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//button[@type='submit' and (contains(.,'Save') or contains(.,'save'))]")));
+        By saveButtonLocator = By.cssSelector("input[type='submit'][name='submit'][value='Save']");
+        WebElement saveButton = wait.until(d -> {
+            WebElement candidate = d.findElement(saveButtonLocator);
+            String disabled = candidate.getAttribute("disabled");
+            return candidate.isDisplayed() && candidate.isEnabled() && disabled == null ? candidate : null;
+        });
         saveButton.click();
         WebElement saved = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//*[contains(translate(text(),'SAVED','saved'),'saved') or @role='status' or contains(@class,'success')]")));
