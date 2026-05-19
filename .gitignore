@@ -23,3 +23,10 @@ bin/
 
 # Logs
 *.log
+
+# Credentials & local config
+src/test/resources/test.properties
+
+# Test artifacts
+screenshots/
+downloads/

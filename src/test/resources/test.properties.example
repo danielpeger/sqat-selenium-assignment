@@ -1,0 +1,13 @@
+base.url=https://vimeo.com
+login.url=https://vimeo.com/log_in
+signup.url=https://vimeo.com/join
+upload.url=https://vimeo.com/upload
+settings.url=https://vimeo.com/settings
+
+user.email=YOUR_VIMEO_EMAIL
+user.password=YOUR_VIMEO_PASSWORD
+
+browser=chrome
+headless=false
+implicit.wait.seconds=5
+explicit.wait.seconds=15

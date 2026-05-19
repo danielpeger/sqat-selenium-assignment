@@ -18,6 +18,14 @@ dependencies {
     testRuntimeOnly 'org.slf4j:slf4j-simple:2.0.13'
 }
 
+sourceSets {
+    test {
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
+
 test {
     useJUnit()
     testLogging {
