@@ -274,11 +274,19 @@ public class BasicTasks {
     @Test
     public void logoutAfterLoginRedirectsToPublicArea() {
         loginWithRealCredentials();
-        driver.get(ConfigReader.get("base.url") + "/log_out");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//a[contains(@href,'/log_in')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
+        By userMenuToggleLocator = By.cssSelector("[data-id='account_menu_button']");
+        WebElement userMenuToggle = wait.until(ExpectedConditions.elementToBeClickable(userMenuToggleLocator));
+        userMenuToggle.click();
+        WebElement logoutControl = wait.until(ExpectedConditions.elementToBeClickable(By.id("log-out")));
+        logoutControl.click();
+
+        String baseUrl = ConfigReader.get("base.url");
+        wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlToBe(baseUrl),
+                ExpectedConditions.urlToBe(baseUrl + "/")));
         Assert.assertTrue(
-                "After logout the page must show a link back to /log_in",
-                driver.findElements(By.xpath("//a[contains(@href,'/log_in')]")).size() > 0);
+                "After logout the user should be redirected to the home page",
+                driver.getCurrentUrl().equals(baseUrl) || driver.getCurrentUrl().equals(baseUrl + "/"));
     }
 }
